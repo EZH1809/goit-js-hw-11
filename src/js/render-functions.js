@@ -4,10 +4,9 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-
-
 export const renderGallery = (images) => {
   const galleryContainer = document.getElementById('gallery');
+
   galleryContainer.innerHTML = '';
 
   if (images.length === 0) {
@@ -23,40 +22,54 @@ export const renderGallery = (images) => {
     galleryContainer.appendChild(card);
   });
 
-    const lightbox = new SimpleLightbox('.gallery-item' , {
-  captionsData: 'alt',
-  captionDelay: 250,
+  const lightbox = new SimpleLightbox('.gallery-item', {
+    captionsData: 'alt',
+    captionDelay: 250,
   });
-    
+
   lightbox.refresh();
 };
 
 const createImageCard = (image) => {
-  const card = document.createElement('a'); 
+  const card = document.createElement('a');
   card.classList.add('gallery-item');
-    card.href = image.largeImageURL;
-    
+  card.href = image.largeImageURL;
+
   const img = document.createElement('img');
   img.src = image.webformatURL;
   img.alt = image.tags;
 
-  const likes = document.createElement('span');
-  likes.textContent = `Likes: ${image.likes}`;
+  const infoContainer = document.createElement('div');
+  infoContainer.classList.add('gallery-item-info');
 
-  const views = document.createElement('span');
-  views.textContent = `Views: ${image.views}`;
+  const likes = createInfoElement('Likes', image.likes);
+  const views = createInfoElement('Views', image.views);
+  const comments = createInfoElement('Comments', image.comments);
+  const downloads = createInfoElement('Downloads', image.downloads);
 
-  const comments = document.createElement('span');
-  comments.textContent = `Comments: ${image.comments}`;
-
-  const downloads = document.createElement('span');
-  downloads.textContent = `Downloads: ${image.downloads}`;
+  infoContainer.appendChild(likes);
+  infoContainer.appendChild(views);
+  infoContainer.appendChild(comments);
+  infoContainer.appendChild(downloads);
 
   card.appendChild(img);
-  card.appendChild(likes);
-  card.appendChild(views);
-  card.appendChild(comments);
-  card.appendChild(downloads);
+  card.appendChild(infoContainer);
 
   return card;
+};
+
+const createInfoElement = (label, value) => {
+  const infoElement = document.createElement('div');
+  infoElement.classList.add('gallery-item-info-element');
+  
+  const labelElement = document.createElement('span');
+  labelElement.textContent = `${label}: `;
+  
+  const valueElement = document.createElement('span');
+  valueElement.textContent = value;
+  
+  infoElement.appendChild(labelElement);
+  infoElement.appendChild(valueElement);
+
+  return infoElement;
 };

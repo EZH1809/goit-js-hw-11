@@ -1,5 +1,8 @@
 // логика работы приложения
 
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
+
 import searchImages from './js/pixabay-api';
 import { renderGallery } from './js/render-functions';
 
@@ -8,10 +11,13 @@ const searchInput = document.getElementById('search-input');
 const loader = document.querySelector('.loader');
 
 // Определение функции clearGallery за пределами обработчика событий
+
 function clearGallery() {
   const galleryContainer = document.getElementById('gallery');
   galleryContainer.innerHTML = '';
 }
+
+
 
 searchForm.addEventListener('submit', function (event) {
   event.preventDefault();
@@ -31,12 +37,20 @@ searchForm.addEventListener('submit', function (event) {
  // Вызов функции clearGallery перед новым поиском
   clearGallery();
 
-  searchImages(query)
-    .then(images => renderGallery(images))
+searchImages(query)
+    .then(images => {
+      if (images.length === 0) {
+        iziToast.error({
+          title: 'Error',
+          message: 'Sorry, there are no images matching your search query. Please try again.',
+        });
+      } else {
+        renderGallery(images);
+      }
+    })
     .catch(error => {
       console.error('Error in search:', error);
       searchInput.value = '';
-      clearGallery();
       iziToast.error({
         title: 'Error',
         message: 'An error occurred while fetching images. Please try again.',
