@@ -32,7 +32,11 @@ const showLoader = () => {
 searchForm.addEventListener('submit', function (event) {
   event.preventDefault();
 
+    // Получаем значение из поля ввода и убираем пробелы по краям
   const query = searchInput.value.trim();
+
+   // Очищаем галерею перед новым поиском
+  clearGallery();
 
   // Если запрос пустой, выводится предупреждение, и происходит очистка галереи 
   if (query === '') {
@@ -46,11 +50,13 @@ searchForm.addEventListener('submit', function (event) {
 
   // Иначе, вызывается функция showLoader для отображения индикатора загрузки
   showLoader();
+  
 
   // Отправка запроса к API 
   searchImages(query)
     .then(images => {
       if (images.length === 0) {
+          // Если изображения не найдены, выводим сообщение об ошибке
         iziToast.error({
           title: 'Error',
           message: 'Sorry, there are no images matching your search query. Please try again.',
