@@ -1,4 +1,5 @@
 // логика работы приложения
+//импорт библиотеки и модулей 
 
 import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
@@ -6,38 +7,48 @@ import "izitoast/dist/css/iziToast.min.css";
 import searchImages from './js/pixabay-api';
 import { renderGallery } from './js/render-functions';
 
+// Cсылки на элементы формы поиска, ввода и индикатора загрузки.
 const searchForm = document.getElementById('search-form');
 const searchInput = document.getElementById('search-input');
 const loader = document.querySelector('.loader');
 
-// Определение функции clearGallery за пределами обработчика событий
-
+// clearGallery очищает контейнер галереи.
 function clearGallery() {
   const galleryContainer = document.getElementById('gallery');
   galleryContainer.innerHTML = '';
 }
 
+// hideLoader скрывает индикатор загрузки.
+function hideLoader() {
+  loader.style.display = 'none';
+}
 
+// showLoader отображает индикатор загрузки.
+const showLoader = () => {
+  loader.style.display = 'block';
+};
 
+// Обработчик события для формы поиска
 searchForm.addEventListener('submit', function (event) {
   event.preventDefault();
 
   const query = searchInput.value.trim();
 
+  // Если запрос пустой, выводится предупреждение, и происходит очистка галереи 
   if (query === '') {
     iziToast.warning({
       title: 'Warning',
       message: 'Please enter a search term.',
     });
+    clearGallery(); // Очистка галереи при вводе пустой строки
     return;
   }
 
+  // Иначе, вызывается функция showLoader для отображения индикатора загрузки
   showLoader();
 
- // Вызов функции clearGallery перед новым поиском
-  clearGallery();
-
-searchImages(query)
+  // Отправка запроса к API 
+  searchImages(query)
     .then(images => {
       if (images.length === 0) {
         iziToast.error({
@@ -46,6 +57,7 @@ searchImages(query)
         });
       } else {
         renderGallery(images);
+        searchInput.value = '';
       }
     })
     .catch(error => {
@@ -56,14 +68,7 @@ searchImages(query)
         message: 'An error occurred while fetching images. Please try again.',
       });
     })
-    .finally(hideLoader);
+    .finally(() => {
+      hideLoader(); 
+    });
 });
-
-const showLoader = () => {
-  loader.style.display = 'block';
-};
-
-function hideLoader() {
-    loader.style.display = 'none';
-}
-
